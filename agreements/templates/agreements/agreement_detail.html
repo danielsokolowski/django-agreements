@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load current_menu_tab %}
+				{% block headtitle %}{{ block.super }} | ecoFriendly Properties {% endblock %}
+				
+				{% block head %} 
+				{{ block.super }}
+				<link rel="stylesheet" href="/static/css/rentals.css" type="text/css" >
+				<!--[if lte IE 7]>
+					<link rel="stylesheet" type="text/css" href="/static/css/rentals-ie-lt7.css" >
+				<![endif]-->
+				{% endblock %}
+				
+				{% block idHeader %}
+				{% url rentals_index as str_url %}
+				{% ifnotequal request_path str_url %}
+					<li><a class='nohover' title='Go Back' onclick='javascript:history.back(1); return false' href='#'><img alt='Go Back' src='/static/rentals/icon_goback.gif'></a><a title='Go Back' onclick='javascript:history.back(1); return false' href='#'>Go Back</a></li>
+				{% endifnotequal %}
+				<li><a class='nohover' title='Enviromantly friendly properties' href='{% url rentals_index %}'><img alt='Go Home' src='/static/rentals/icon_home.gif'></a><a title='Enviromantly friendly properties' href='{% url rentals_index %}'>Home</a></li>
+				{{ block.super }}
+				{% endblock %}
+				{% block idLogo %}
+				<!-- see http://alistapart.com/articles/flashsatay -->
+				<object
+				type="application/x-shockwave-flash" data="/static/rentals/danols_logo.swf" 
+				width="400" height="200">
+				<param name="movie" value="/static/rentals/danols_logo.swf">
+				<PARAM NAME=wmode VALUE="transparent">
+				</object>	
+
+				{% endblock %}
+				
+				{% block idLogoImages %}
+					
+					<!--<img src="/static/rentals/logo_yes_recycle.png">
+					<img src="/static/rentals/logo_yes_fluorescent.png">
+					<img src="/static/rentals/logo_yes_earth.png">-->
+				{% endblock %}	
+				
+				{% block idLogoMenu %}
+				<ul class='menu5'>
+					{% url app_rental_list as str_index_url %}
+					<li class=''><a href="{% url app_rental_list %}"><b>Rental Properties</b></a></li>
+					
+					{% url our_rating as str_index_url %}
+					<li class=''><a href="{% url our_rating %}"><b>Our Rating</b></a></li>
+					
+					{% url rentals_aboutus as str_index_url %}
+					<li class=''><a href="{% url rentals_aboutus %}"><b>About Us</b></a></li>
+					
+					
+					{% url application_form as str_index_url %}
+					<li class=''><a href="{% url application_form %}{% block application_url_sufix %}{% endblock %}"><b>Application Form</b></a></li>
+					
+					<!--<li><a href=""><b>Request Maitance</b></a></li>-->
+				</ul>
+				{% endblock %}
+			
+				{% block idContent %}
+				<div id='idContentSubSectionWrapper'>
+					<div class="dialog">
+					<div class="content">
+					<div class="t"></div>
+						<div id='idContentSubSection'>
+						<h2>Occupant Lease Acceptances</h2>
+						<ul>
+						{% for acceptance in agreement_object.acceptance_set.live %}
+						<li style='white-space: nowrap'>{{acceptance.confirmation|slice:":32"}}...</li>
+						{% empty %}
+						<li class='clsWarning'>None Found</li>
+						{% endfor %}
+						</ul>
+						</div>
+					</div>
+					<div class="b"><div></div></div>
+					</div>	
+				</div>
+				
+				<div id='idContentMainSection'>
+				<h1>{{agreement_object.name}}</h1>
+				<h2>Effective: {{agreement_object.date_start|date:"SHORT_DATE_FORMAT"}} -  {{agreement_object.date_end|date:"SHORT_DATE_FORMAT"}}</h2>
+				{{agreement_object.content|safe}}
+				
+				<hr>
+				<form class='clsForm' action='{% url AgreementDetailView slug=agreement_object.slug %}' method="post" accept-charset="utf-8">
+				<table >
+				
+	{% csrf_token %}
+	{{ acceptance_form.as_table }}
+	<tr>
+	<td colspan=1>
+	<input type="submit" value="Submit" >
+	</td>
+	</tr>
+
+</table>
+</form>
+				</div>
+				{% endblock %}				
+			
