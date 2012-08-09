@@ -111,7 +111,7 @@ class Acceptance(models.Model):
     """
     ### model options - "anything that's not a field"
     class Meta:
-        unique_together = [["agreement", "confirmation"]]
+        unique_together = ["agreement", "confirmation"]
     
     ### django native method
     def __unicode__(self):
@@ -131,5 +131,73 @@ class Acceptance(models.Model):
     status = models.IntegerField(choices=AcceptanceManager.STATUS_CHOICES, default=AcceptanceManager.STATUS_ENABLED)
     agreement = models.ForeignKey(Agreement)
     date_created = models.DateField(auto_now_add=True)
-    confirmation = models.CharField(max_length=255, help_text='To accept write: Full Legal Name* - Date of Birth* - Driver License or SIN')
+    confirmation = models.CharField(max_length=255, help_text='To accept write: Full Legal Name* - Date of Birth* - Driver License* or SIN*')
+    
+class AttachmentManager(models.Manager):
+    """
+    Additional methods / constants to Attachment's objects manager:
+    
+    ``AttachmentManager.objects.active()`` - all active instances
+    """
+    ### Model (db table) wide constants - we put these and not in model definition to avoid circular imports.
+    ### One can access these constants through <foo>.objects.STATUS_DISABLED or ImageManager.STATUS_DISABLED
+    STATUS_DISABLED = 0
+    STATUS_ENABLED = 100
+    STATUS_ARCHIVED = 500
+    STATUS_CHOICES = (
+        (STATUS_DISABLED, "Disabled"),
+        (STATUS_ENABLED, "Enabled"),
+        (STATUS_ARCHIVED, "Archived"),
+    )
+    # we keep status and filters naming a little different as
+    # it is not one-to-one mapping in all situations
+    def live(self):
+        """ Returns all entries accessible through front end site"""
+        return self.all().filter(status=self.STATUS_ENABLED)
+    #def current(self):
+    #   """ Returns entries that are live and considered 'fresh' """
+    #   return self.all().filter(status=self.STATUS_ENABLED, date_added_gte = ...)
+    def retired(self):
+        """ Returns entries that are live and considered 'old' """
+        return self.all().filter(status=self.STATUS_ARCHIVED)
+
+class Attachment(models.Model):
+    """
+    Main entity representing Attachment object
+    """
+    ### model options - "anything that's not a field"
+    class Meta:
+        ordering = ['name', 'date_created']
+        get_latest_by = 'order'
+        #order_with_respect_to = <some FK to parent model>
+        #permissions = [["can_deliver_pizzas", "Can deliver pizzas"]]
+        #unique_together = [["driver", "restaurant"]]
+        #verbose_name = "pizza"
+        #verbose_name_plural = "stories"
+    
+    ### django native method
+    def __unicode__(self):
+        """ Retruns a unicode representation for the instance of this model """
+        return u'%s' % (self.name)
+         
+        
+    ### extra model functions
+    def get_upload_path(instance, filename):
+        """ returns a dynamic path for filefields/imagefieds """
+        return '%s/%s/%s' % (instance._meta.app_label, instance._meta.module_name, filename)
+    
+    ### custom managers
+    objects = AttachmentManager()
+    #objects = models.GeoManager() # geodjango objects manager
+    
+    ### model DB fields
+    status = models.IntegerField(choices=AttachmentManager.STATUS_CHOICES, default=AttachmentManager.STATUS_ENABLED)
+    agreement = models.ForeignKey(Agreement)
+    date_created = models.DateField(auto_now_add=True)
+    file = models.FileField(upload_to=get_upload_path)
+    name = models.CharField(help_text='Name', max_length=30)
+    description = models.TextField(help_text='Optional description', blank=True)
+    
+
+    
     

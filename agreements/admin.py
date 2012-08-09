@@ -1,12 +1,16 @@
+from .models import *
 from django.conf.urls.defaults import url, patterns
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
-from agreements.models import Agreement, Acceptance
 
 class AcceptanceInline(admin.TabularInline):
     model = Acceptance
-    extra = 3
+    extra = 1
+    
+class AttachmentInline(admin.TabularInline):
+    model = Attachment
+    extra = 1
 
 class AgreementAdmin(admin.ModelAdmin):
     """ Admin settings for Agreement model """
@@ -34,7 +38,7 @@ class AgreementAdmin(admin.ModelAdmin):
     list_display_links = ['id'] # other columns from list_display to turn into edits link; defaults to first column
     #list_editable = ['status'] # from list_display but can not use fields from list_display_links
     list_filter = ['status'] # from least specific to most specific
-    inlines = [AcceptanceInline]
+    inlines = [AttachmentInline, AcceptanceInline]
     
    
 admin.site.register(Agreement , AgreementAdmin)

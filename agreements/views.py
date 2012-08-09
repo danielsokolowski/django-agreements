@@ -2,7 +2,8 @@ from django.views.generic import DetailView
 from agreements.models import Agreement
 from .forms import *
 from django.views.generic.edit import FormMixin
-
+from django.db import IntegrityError
+from django.contrib import messages
 class AgreementDetailView(DetailView, FormMixin):
     """  
     Detail view for a Agreement instance. 
@@ -51,7 +52,10 @@ class AgreementDetailView(DetailView, FormMixin):
         if form.is_valid():
             acceptance_new = form.save(commit=False) 
             acceptance_new.agreement = self.object
-            acceptance_new.save()
+            try: 
+                acceptance_new.save()
+            except IntegrityError:
+                messages.info(self.request, 'Your acceptance has already been recorded.')
             
         return self.render_to_response(context)
  

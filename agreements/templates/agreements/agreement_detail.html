@@ -61,15 +61,41 @@
 					<div class="content">
 					<div class="t"></div>
 						<div id='idContentSubSection'>
-						<h2>Occupant Lease Acceptances</h2>
+						<h2>Agreement Acceptances</h2>
 						<ul>
 						{% for acceptance in agreement_object.acceptance_set.live %}
-						<li style='white-space: nowrap'>{{acceptance.confirmation|slice:":32"}}...</li>
+						<li style='white-space: nowrap'>{{acceptance.date_created|date:"SHORT_DATE_FORMAT"}} - {{acceptance.confirmation|slice:":28"}}...</li>
 						{% empty %}
 						<li class='clsWarning'>None Found</li>
 						{% endfor %}
 						</ul>
+					<br><br>
+					<h2>Agreement Attachments</h2>
+						<ul>
+						{% for attachment in agreement_object.attachment_set.live %}
+						<li style='white-space: nowrap'><a href='{{attachment.file.url}}'>{{attachment.date_created|date:"SHORT_DATE_FORMAT"}} - {{attachment.name}}</a></li>
+						{% empty %}
+						<li class='clsWarning'>None Found</li>
+						{% endfor %}
+						</ul>
+					
+					<br><br>
+					<h2>Important Fees To Know</h2>
+					<ul>
+					<li>Reprocess Cheques: $50 + Bank Fees</li>
+					<li>Smoke Detector Tampering Fee: $250</li>
+					<li>Avoidable Rental Cleaning: $40/hour</li>
+					<li>Labour Rate if at Fault: $40/hour</li>
+					<li>Security Feed Disabling: $100</li>
+					<li>Damaged Camera Replacement: $200</li>
+					<li>Unlock Doors: $25 (1st no-cost)</li>
+					<li>Lost Keys: $50 (lock replaced)</li>
+					<li>Overdue Accounts: 24% per annum</li>
+					
+					</ul>
+					
 						</div>
+					
 					</div>
 					<div class="b"><div></div></div>
 					</div>	
@@ -78,9 +104,11 @@
 				<div id='idContentMainSection'>
 				<h1>{{agreement_object.name}}</h1>
 				<h2>Effective: {{agreement_object.date_start|date:"SHORT_DATE_FORMAT"}} -  {{agreement_object.date_end|date:"SHORT_DATE_FORMAT"}}</h2>
+				<hr>
 				{{agreement_object.content|safe}}
 				
 				<hr>
+				
 				<form class='clsForm' action='{% url AgreementDetailView slug=agreement_object.slug %}' method="post" accept-charset="utf-8">
 				<table >
 				
