@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: django-agreements
+Version: 0.5.0
+Summary: Arbitrary agreement/lease/terms-and-conditions signing app
+Home-page: http://github.com/danielsokolowski/django-agreements
+Author: Daniel Sokolowski 
+Author-email: stnemeerga-ognajd@danols.com
+License: N/A
+Description: UNKNOWN
+Platform: UNKNOWN

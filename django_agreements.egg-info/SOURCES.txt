@@ -1,0 +1,14 @@
+LICENSE
+MANIFEST.in
+agreements/__init__.py
+agreements/admin.py
+agreements/forms.py
+agreements/models.py
+agreements/tests.py
+agreements/urls.py
+agreements/views.py
+django_agreements.egg-info/PKG-INFO
+django_agreements.egg-info/SOURCES.txt
+django_agreements.egg-info/dependency_links.txt
+django_agreements.egg-info/requires.txt
+django_agreements.egg-info/top_level.txt
