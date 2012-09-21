@@ -23,8 +23,8 @@ class AgreementAdmin(admin.ModelAdmin):
     def site_url(obj):
         try:
             return "<a href='%s'>%s</a>" % (obj.get_absolute_url(), obj.get_absolute_url()) 
-        except AttributeError:
-            return "N/A" # no model get_absolute_url defined
+        except (AttributeError, NoReverseMatch):
+            return "N/A" # no model get_absolute_url defined or url reverse fails
     site_url.allow_tags = True
     
     ### model admin options

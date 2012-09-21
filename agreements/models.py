@@ -72,7 +72,7 @@ class Agreement(models.Model):
     slug = models.SlugField(help_text='An identifier label used in URL generation and used as a unique identification reference.',
                                                unique=True, null=True, validators=[RegexValidator(r'.+')], default=lambda : uuid.uuid4())
     date_start = models.DateField()
-    date_end = models.DateField() 
+    date_end = models.DateField(blank=True, null=True) 
     description = models.TextField(help_text='Optional description', blank=True)
     content = models.TextField(help_text='Optional content', blank=True)
     
@@ -131,7 +131,7 @@ class Acceptance(models.Model):
     status = models.IntegerField(choices=AcceptanceManager.STATUS_CHOICES, default=AcceptanceManager.STATUS_ENABLED)
     agreement = models.ForeignKey(Agreement)
     date_created = models.DateField(auto_now_add=True)
-    confirmation = models.CharField(max_length=255, help_text='To accept write: Full Legal Name* - Date of Birth* - Driver License* or SIN*')
+    confirmation = models.CharField(max_length=255, help_text='To accept write your full legal name')
     
 class AttachmentManager(models.Manager):
     """
