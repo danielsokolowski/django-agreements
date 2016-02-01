@@ -11,7 +11,7 @@ import uuid
 class AgreementManager(models.Manager):
     """
     Additional methods / constants to Agreement's objects manager:
-    
+
     ``AgreementManager.objects.active()`` - all active instances
     """
     ### Model (db table) wide constants - we put these and not in model definition to avoid circular imports.
@@ -46,44 +46,46 @@ class Agreement(models.Model):
         #unique_together = [["driver", "restaurant"]]
         #verbose_name = "pizza"
         #verbose_name_plural = "stories"
-    
+
     ### django native method
     def get_absolute_url(self):
         """ Returns the relative url mapping for the instance of this model if it exists or None otherwise"""
         return iri_to_uri(reverse('AgreementDetailView', kwargs={'slug': urlquote(self.slug)}))
-    
+
     def __unicode__(self):
         """ Retruns a unicode representation for the instance of this model """
         return u'%s' % (self.name)
         # for INTERNAL not vistor facing one can use below
         # return u'ID%s: %s - %s - %s - %s' % (self.id, self.user, self.question, self.answer, self.get_status_display())
-         
-        
+
+
     ### extra model functions
     #n/a
-    
+
     ### custom managers
     objects = AgreementManager()
     #objects = models.GeoManager() # geodjango objects manager
-    
+
     ### model DB fields
     status = models.IntegerField(choices=AgreementManager.STATUS_CHOICES, default=AgreementManager.STATUS_ENABLED)
     name = models.CharField(help_text='Name', max_length=75)
     slug = models.SlugField(help_text='An identifier label used in URL generation and used as a unique identification reference.',
                                                unique=True, null=True, validators=[RegexValidator(r'.+')], default=lambda : uuid.uuid4())
+
+    # date_modified = models.DateTimeField(auto_now=True)
     date_start = models.DateField()
-    date_end = models.DateField(blank=True, null=True) 
+    date_end = models.DateField()
     description = models.TextField(help_text='Optional description', blank=True)
     content = models.TextField(help_text='Optional content', blank=True)
-    
+
     ### GeoDjango-specific fields
     #geopoint = models.PointField()
-    
+
 
 class AcceptanceManager(models.Manager):
     """
     Additional methods / constants to Acceptance's objects manager:
-    
+
     ``AcceptanceManager.objects.active()`` - all active instances
     """
     ### Model (db table) wide constants - we put these and not in model definition to avoid circular imports.
@@ -112,31 +114,35 @@ class Acceptance(models.Model):
     ### model options - "anything that's not a field"
     class Meta:
         unique_together = ["agreement", "confirmation"]
-    
+
     ### django native method
     def __unicode__(self):
         """ Retruns a unicode representation for the instance of this model """
-        return u'%s - %s' % (self.agreement, self.confirmation)
+        return u'%s - %s (signed %s): ' % (self.agreement, self.confirmation, self.date_created)
         # for INTERNAL not vistor facing one can use below
         # return u'ID%s: %s - %s - %s - %s' % (self.id, self.user, self.question, self.answer, self.get_status_display())
-         
-        
+
+
     ### extra model functions
-    #n/a
-    
+    def get_upload_path(instance, filename):
+        """ returns a dynamic path for filefields/imagefieds """
+        return '%s/%s/%s' % (instance._meta.app_label, instance._meta.module_name, filename)
+
     ### custom managers
     objects = AcceptanceManager()
-    
+
     ### model DB fields
     status = models.IntegerField(choices=AcceptanceManager.STATUS_CHOICES, default=AcceptanceManager.STATUS_ENABLED)
     agreement = models.ForeignKey(Agreement)
     date_created = models.DateField(auto_now_add=True)
-    confirmation = models.CharField(max_length=255, help_text='To accept write your full legal name')
-    
+    confirmation = models.CharField(max_length=255, help_text='To accept write: Full Legal Name* - Date of Birth* - Driver License* or SIN*')
+    file = models.FileField(upload_to=get_upload_path, max_length=240 ,help_text='Please attached a scan of Driver License* or SIN*')
+
+
 class AttachmentManager(models.Manager):
     """
     Additional methods / constants to Attachment's objects manager:
-    
+
     ``AttachmentManager.objects.active()`` - all active instances
     """
     ### Model (db table) wide constants - we put these and not in model definition to avoid circular imports.
@@ -174,30 +180,26 @@ class Attachment(models.Model):
         #unique_together = [["driver", "restaurant"]]
         #verbose_name = "pizza"
         #verbose_name_plural = "stories"
-    
+
     ### django native method
     def __unicode__(self):
         """ Retruns a unicode representation for the instance of this model """
         return u'%s' % (self.name)
-         
-        
+
+
     ### extra model functions
     def get_upload_path(instance, filename):
         """ returns a dynamic path for filefields/imagefieds """
         return '%s/%s/%s' % (instance._meta.app_label, instance._meta.module_name, filename)
-    
+
     ### custom managers
     objects = AttachmentManager()
     #objects = models.GeoManager() # geodjango objects manager
-    
+
     ### model DB fields
     status = models.IntegerField(choices=AttachmentManager.STATUS_CHOICES, default=AttachmentManager.STATUS_ENABLED)
     agreement = models.ForeignKey(Agreement)
     date_created = models.DateField(auto_now_add=True)
-    file = models.FileField(upload_to=get_upload_path)
-    name = models.CharField(help_text='Name', max_length=30)
+    file = models.FileField(upload_to=get_upload_path, max_length=240)
+    name = models.CharField(help_text='Name', max_length=60)
     description = models.TextField(help_text='Optional description', blank=True)
-    
-
-    
-    
