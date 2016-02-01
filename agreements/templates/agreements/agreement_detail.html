@@ -33,7 +33,7 @@
 	
 	<hr>
 	
-	<form class='clsForm' action='{% url "AgreementDetailView" slug=agreement_object.slug %}' method="post" accept-charset="utf-8">
+	<form class='clsForm' action='{% url "AgreementDetailView" slug=agreement_object.slug %}' enctype="multipart/form-data" method="post" accept-charset="utf-8">
 	<table >
 				
 	{% csrf_token %}
