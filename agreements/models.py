@@ -136,7 +136,7 @@ class Acceptance(models.Model):
     agreement = models.ForeignKey(Agreement)
     date_created = models.DateField(auto_now_add=True)
     confirmation = models.CharField(max_length=255, help_text='To accept write: Full Legal Name* - Date of Birth* - Driver License* or SIN*')
-    file = models.FileField(upload_to=get_upload_path, max_length=240 ,help_text='Please attached a scan of Driver License* or SIN*')
+    file = models.FileField(blank=True, upload_to=get_upload_path, max_length=240 ,help_text='Please attached a scan of Driver License* or SIN*')
 
 
 class AttachmentManager(models.Manager):
@@ -200,6 +200,7 @@ class Attachment(models.Model):
     status = models.IntegerField(choices=AttachmentManager.STATUS_CHOICES, default=AttachmentManager.STATUS_ENABLED)
     agreement = models.ForeignKey(Agreement)
     date_created = models.DateField(auto_now_add=True)
-    file = models.FileField(upload_to=get_upload_path, max_length=240)
+    url = models.URLField(blank=True, max_length=240)
+    file = models.FileField(upload_to=get_upload_path, max_length=240, blank=True)
     name = models.CharField(help_text='Name', max_length=60)
     description = models.TextField(help_text='Optional description', blank=True)
