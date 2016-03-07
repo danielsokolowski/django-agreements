@@ -10,7 +10,12 @@
 	<h2>Agreement Attachments</h2>
 	<ul>
 	{% for attachment in agreement_object.attachment_set.live %}
-	<li style='white-space: nowrap'><a href='{{attachment.file.url}}'>{{attachment.date_created|date:"SHORT_DATE_FORMAT"}} - {{attachment.name}}</a></li>
+		{% if attachment.file %}
+			<li style='white-space: nowrap'><a href='{{attachment.file.url}}'>{{attachment.date_created|date:"SHORT_DATE_FORMAT"}} - {{attachment.name}}</a></li>
+		{% endif %}
+		{% if attachment.url %}
+			<li style='white-space: nowrap'><a href='{{attachment.url}}'>{{attachment.date_created|date:"SHORT_DATE_FORMAT"}} - {{attachment.name}}</a></li>
+		{% endif %}
 	{% empty %}
 	<li class='clsWarning'>None Found</li>
 	{% endfor %}
